@@ -2,7 +2,7 @@
 require 'common/models/redis_store'
 require 'mvi/service_factory'
 
-class Mvi < Common::RedisStore
+class MviResponse < Common::RedisStore
   redis_store REDIS_CONFIG['mvi_store']['namespace']
   redis_ttl REDIS_CONFIG['mvi_store']['each_ttl']
   redis_key :uuid
@@ -18,7 +18,7 @@ class Mvi < Common::RedisStore
   attribute :response
 
   def self.from_user(user)
-    mvi = Mvi.find_or_build(user.uuid)
+    mvi = MviResponse.find_or_build(user.uuid)
     mvi.user = user
     mvi
   end
@@ -43,16 +43,16 @@ class Mvi < Common::RedisStore
     return { status: 'NOT_AUTHORIZED' } unless @user.loa3?
     response = mvi_response
     return { status: 'SERVER_ERROR' } unless response
-    return response unless response[:status] == MVI_RESPONSE_STATUS[:ok]
+    return response unless response.status == MVI_RESPONSE_STATUS[:ok]
     {
-      status: response[:status],
-      birth_date: response[:birth_date],
-      family_name: response[:family_name],
-      suffix: response[:suffix],
-      gender: response[:gender],
-      given_names: response[:given_names],
-      address: response[:address],
-      home_phone: response[:home_phone]
+      status: response.status,
+      birth_date: response.birth_date,
+      family_name: response.family_name,
+      suffix: response.suffix,
+      gender: response.gender,
+      given_names: response.given_names,
+      address: response.address,
+      home_phone: response.home_phone
     }
   end
 
@@ -60,7 +60,7 @@ class Mvi < Common::RedisStore
 
   def mhv_correlation_ids
     return nil unless mvi_response
-    ids = mvi_response&.dig(:mhv_ids)
+    ids = mvi_response.mhv_ids
     ids = [] unless ids
     ids.map { |mhv_id| mhv_id.split('^')&.first }.compact
   end

@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 # rubocop:disable Metrics/MethodLength
 def stub_mvi
-  allow(Mvi).to receive(:find).and_return(
-    Mvi.new(
+  allow(MviResponse).to receive(:find).and_return(
+    MviResponse.new(
       uuid: 'abc123',
       response: {
         status: 'OK',
@@ -31,8 +31,8 @@ def stub_mvi
 end
 
 def stub_mvi_not_found
-  allow(Mvi).to receive(:find).and_return(
-    Mvi.new(
+  allow(MviResponse).to receive(:find).and_return(
+    MviResponse.new(
       uuid: 'abc123',
       response: {
         status: 'NOT_FOUND'

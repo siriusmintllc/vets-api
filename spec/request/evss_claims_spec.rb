@@ -9,8 +9,8 @@ RSpec.describe 'EVSS Claims management', type: :request do
 
   context 'for a user without evss attrs' do
     before do
-      allow(Mvi).to receive(:find).and_return(
-        Mvi.new(
+      allow(MviResponse).to receive(:find).and_return(
+        MviResponse.new(
           uuid: 'abc123',
           response: {
             status: 'OK',

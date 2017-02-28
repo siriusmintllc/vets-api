@@ -34,6 +34,36 @@ module MVI
 
       MULTIPLE_MATCHES_FOUND = 'Multiple Matches Found'
 
+      PatientStruct = Struct.new(
+        :active_status,
+        :given_names,
+        :family_name,
+        :suffix,
+        :gender,
+        :birth_date,
+        :ssn,
+        :address,
+        :home_phone,
+        :icn,
+        :mhv_ids,
+        :edipi,
+        :vba_corp_id
+      )
+
+      NameStruct = Struct.new(
+        :given,
+        :family,
+        :suffix
+      )
+
+      AddressStruct = Struct.new(
+        :street,
+        :city,
+        :state,
+        :postal_code,
+        :country
+      )
+
       def initialize(response)
         super(response)
         @subject = locate_element(@original_body, SUBJECT_XPATH)
@@ -42,18 +72,7 @@ module MVI
       def body
         patient = locate_element(@subject, PATIENT_XPATH)
         return nil unless patient
-        name = parse_name(get_patient_name(patient))
-        {
-          active_status: locate_element(patient, STATUS_XPATH),
-          given_names: name[:given],
-          family_name: name[:family],
-          suffix: name[:suffix],
-          gender: locate_element(patient, GENDER_XPATH),
-          birth_date: locate_element(patient, DOB_XPATH),
-          ssn: parse_ssn(locate_element(patient, SSN_XPATH)),
-          address: parse_address(patient),
-          home_phone: parse_phone(patient)
-        }.merge(map_correlation_ids(patient.locate('id')))
+        build_response(patient)
       end
 
       def multiple_match?
@@ -63,6 +82,26 @@ module MVI
       end
 
       private
+
+      def build_response(patient)
+        name = parse_name(get_patient_name(patient))
+        correlation_ids = map_correlation_ids(patient.locate('id'))
+        MviPatient.new(
+          active_status: locate_element(patient, STATUS_XPATH),
+          given_names: name[:given],
+          family_name: name[:family],
+          suffix: name[:suffix],
+          gender: locate_element(patient, GENDER_XPATH),
+          birth_date: locate_element(patient, DOB_XPATH),
+          ssn: parse_ssn(locate_element(patient, SSN_XPATH)),
+          address: parse_address(patient),
+          home_phone: parse_phone(patient),
+          icn: correlation_ids[:icn],
+          mhv_ids: correlation_ids[:mhv_ids],
+          edipi: correlation_ids[:edipi],
+          vba_corp_id: correlation_ids[:vba_corp_id]
+        )
+      end
 
       def get_patient_name(patient)
         locate_element(patient, NAME_XPATH)
@@ -96,7 +135,8 @@ module MVI
       def parse_address(patient)
         el = locate_element(patient, ADDRESS_XPATH)
         return nil unless el
-        el.nodes.map { |n| { n.value.snakecase.to_sym => n.nodes.first } }.reduce({}, :merge)
+        address_hash = el.nodes.map { |n| { n.value.snakecase.to_sym => n.nodes.first } }.reduce({}, :merge)
+        MviPatientAddress.new(address_hash)
       end
 
       def parse_phone(patient)

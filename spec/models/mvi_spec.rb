@@ -2,9 +2,9 @@
 require 'rails_helper'
 require 'common/exceptions'
 
-describe Mvi, skip_mvi: true do
+describe MviResponse, skip_mvi: true do
   let(:user) { FactoryGirl.build(:loa3_user) }
-  let(:mvi) { Mvi.from_user(user) }
+  let(:mvi) { MviResponse.from_user(user) }
   let(:find_candidate_response) do
     {
       birth_date: '19800101',
@@ -53,7 +53,7 @@ describe Mvi, skip_mvi: true do
             Common::Client::Errors::HTTPError.new('MVI HTTP call failed', 500)
           )
           expect(Rails.logger).to receive(:error).once.with(/MVI HTTP error code: 500 for user:/)
-          expect(mvi.va_profile).to eq(status: Mvi::MVI_RESPONSE_STATUS[:server_error])
+          expect(mvi.va_profile).to eq(status: MviResponse::MVI_RESPONSE_STATUS[:server_error])
         end
       end
 
@@ -63,7 +63,7 @@ describe Mvi, skip_mvi: true do
           expect(Rails.logger).to receive(:error).once.with(
             /MVI service error: MVI::Errors::InvalidRequestError for user:/
           )
-          expect(mvi.va_profile).to eq(status: Mvi::MVI_RESPONSE_STATUS[:server_error])
+          expect(mvi.va_profile).to eq(status: MviResponse::MVI_RESPONSE_STATUS[:server_error])
         end
       end
 
@@ -73,7 +73,7 @@ describe Mvi, skip_mvi: true do
             MVI::Errors::RecordNotFound.new('not found')
           )
           expect(Rails.logger).to receive(:error).once.with(/MVI record not found for user:/)
-          expect(mvi.va_profile).to eq(status: Mvi::MVI_RESPONSE_STATUS[:not_found])
+          expect(mvi.va_profile).to eq(status: MviResponse::MVI_RESPONSE_STATUS[:not_found])
         end
       end
     end
@@ -88,7 +88,7 @@ describe Mvi, skip_mvi: true do
           family_name: 'Smith',
           gender: 'M',
           given_names: %w(John William),
-          status: Mvi::MVI_RESPONSE_STATUS[:ok],
+          status: MviResponse::MVI_RESPONSE_STATUS[:ok],
           address: nil,
           home_phone: nil,
           suffix: nil
