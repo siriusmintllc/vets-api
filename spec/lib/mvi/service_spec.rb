@@ -19,38 +19,21 @@ describe MVI::Service do
       [user.first_name, user.middle_name], user.last_name, user.birth_date, user.ssn, user.gender
     )
   end
+  let(:va_profile_complete) { build(:va_profile_complete) }
 
   describe '.find_candidate' do
     context 'with a valid request' do
+      let(:va_profile) { build(:va_profile_mvi_response, mhv_ids: nil) }
       it 'calls the find_candidate endpoint with a find candidate message' do
         VCR.use_cassette('mvi/find_candidate/valid') do
           response = subject.find_candidate(message)
-          expect(response).to eq(
-            edipi: nil,
-            icn: '1008714701V416111^NI^200M^USVHA^P',
-            mhv_ids: nil,
-            vba_corp_id: '9100792239^PI^200CORP^USVBA^A',
-            active_status: 'active',
-            given_names: %w(Mitchell G),
-            family_name: 'Jenkins',
-            gender: 'M',
-            birth_date: '19490304',
-            ssn: '796122306',
-            address: {
-              street_address_line: '121 A St',
-              city: 'Austin',
-              state: 'TX',
-              postal_code: '78772',
-              country: 'USA'
-            },
-            suffix: nil,
-            home_phone: nil
-          )
+          expect(response).to have_deep_attributes(va_profile)
         end
       end
     end
 
     context 'with a valid request without gender' do
+      let(:va_profile) { build(:va_profile_mvi_response, mhv_ids: nil) }
       let(:user) do
         FactoryGirl.build(
           :user,
@@ -70,27 +53,7 @@ describe MVI::Service do
       it 'calls the find_candidate endpoint with a find candidate message' do
         VCR.use_cassette('mvi/find_candidate/valid_no_gender') do
           response = subject.find_candidate(message)
-          expect(response).to eq(
-            edipi: nil,
-            icn: '1008714701V416111^NI^200M^USVHA^P',
-            mhv_ids: nil,
-            vba_corp_id: '9100792239^PI^200CORP^USVBA^A',
-            active_status: 'active',
-            given_names: %w(Mitchell G),
-            family_name: 'Jenkins',
-            gender: 'M',
-            birth_date: '19490304',
-            ssn: '796122306',
-            address: {
-              street_address_line: '121 A St',
-              city: 'Austin',
-              state: 'TX',
-              postal_code: '78772',
-              country: 'USA'
-            },
-            suffix: nil,
-            home_phone: nil
-          )
+          expect(response).to have_deep_attributes(va_profile)
         end
       end
     end

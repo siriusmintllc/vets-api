@@ -84,7 +84,7 @@ class FormProfile
   def initialize_contact_information(user)
     FormContactInformation.new(
       address: {
-        street: user.va_profile.address.street_address_line,
+        street: user.va_profile.address.street,
         street2: nil,
         city: user.va_profile.address.city,
         state: user.va_profile.address.state,

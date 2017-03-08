@@ -14,7 +14,7 @@ RSpec.describe FormProfile, type: :model do
       },
       'veteranDateOfBirth' => user.birth_date,
       'veteranAddress' => {
-        'street' => user.va_profile[:address][:street_address_line],
+        'street' => user.va_profile[:address][:street],
         'street_2' => nil,
         'city' => user.va_profile[:address][:city],
         'state' => user.va_profile[:address][:state],

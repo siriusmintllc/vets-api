@@ -1,6 +1,6 @@
 # frozen_string_literal: true
-class MviPatientAddress
-  include Virtus.model(strict: true, nullify_blank: true)
+class VaProfileAddress
+  include Virtus.model
 
   attribute :street, String
   attribute :city, String
@@ -9,17 +9,16 @@ class MviPatientAddress
   attribute :country, String
 end
 
-class MviPatient < Common::RedisStore
-  include Virtus.model(strict: true, nullify_blank: true)
+class VaProfile
+  include Virtus.model
 
-  attribute :active_status, String
   attribute :given_names, Array[String]
   attribute :family_name, String
   attribute :suffix, String
   attribute :gender, String
   attribute :birth_date, String
   attribute :ssn, String
-  attribute :address, MviPatientAddress
+  attribute :address, VaProfileAddress
   attribute :home_phone, String
   attribute :icn, String
   attribute :mhv_ids, String

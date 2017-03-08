@@ -7,6 +7,7 @@ describe MVI::Responses::FindCandidate do
     let(:faraday_response) { instance_double('Faraday::Response') }
     let(:body) { Ox.parse(File.read('spec/support/mvi/find_candidate_response.xml')) }
     let(:find_candidate_response) { MVI::Responses::FindCandidate.new(faraday_response) }
+    let(:va_profile_complete) { build(:va_profile_complete) }
 
     before(:each) do
       allow(faraday_response).to receive(:body) { body }
@@ -27,75 +28,24 @@ describe MVI::Responses::FindCandidate do
     describe '.body' do
       context 'with middle name and icn, mhv correlation ids' do
         it 'should filter the patient attributes the system is interested in' do
-          expect(find_candidate_response.body).to eq(
-            birth_date: '19800101',
-            edipi: '1234^NI^200DOD^USDOD^A',
-            vba_corp_id: '12345678^PI^200CORP^USVBA^A',
-            family_name: 'Smith',
-            gender: 'M',
-            given_names: %w(John William),
-            icn: '1000123456V123456^NI^200M^USVHA^P',
-            mhv_ids: ['123456^PI^200MHV^USVHA^A'],
-            ssn: '555443333',
-            active_status: 'active',
-            address: {
-              street_address_line: '121 A St',
-              city: 'Austin',
-              state: 'TX',
-              postal_code: '78772',
-              country: 'USA'
-            },
-            home_phone: '1112223333',
-            suffix: 'Sr'
-          )
+          expect(find_candidate_response.body).to have_deep_attributes(va_profile_complete)
         end
       end
 
       context 'when name parsing fails' do
-        it 'should set the names to false' do
+        let(:va_profile_complete) { build(:va_profile_complete, given_names: nil, family_name: nil, suffix: nil) }
+        it 'has nil name values' do
           allow(find_candidate_response).to receive(:get_patient_name).and_return(nil)
-          expect(find_candidate_response.body).to eq(
-            birth_date: '19800101',
-            edipi: '1234^NI^200DOD^USDOD^A',
-            vba_corp_id: '12345678^PI^200CORP^USVBA^A',
-            family_name: nil,
-            gender: 'M',
-            given_names: nil,
-            icn: '1000123456V123456^NI^200M^USVHA^P',
-            mhv_ids: ['123456^PI^200MHV^USVHA^A'],
-            ssn: '555443333',
-            active_status: 'active',
-            address: {
-              street_address_line: '121 A St',
-              city: 'Austin',
-              state: 'TX',
-              postal_code: '78772',
-              country: 'USA'
-            },
-            home_phone: '1112223333',
-            suffix: nil
-          )
+          expect(find_candidate_response.body.given_names).to eq([])
+          expect(find_candidate_response.body.family_name).to be_nil
         end
       end
 
       context 'with a missing address' do
+        let(:va_profile) { build(:va_profile, home_phone: '1112223333', suffix: 'Sr') }
         let(:body) { Ox.parse(File.read('spec/support/mvi/find_candidate_response_nil_address.xml')) }
         it 'should set the address to nil' do
-          expect(find_candidate_response.body).to eq(
-            birth_date: '19800101',
-            edipi: '1234^NI^200DOD^USDOD^A',
-            vba_corp_id: '12345678^PI^200CORP^USVBA^A',
-            family_name: 'Smith',
-            gender: 'M',
-            given_names: %w(John William),
-            icn: '1000123456V123456^NI^200M^USVHA^P',
-            mhv_ids: ['123456^PI^200MHV^USVHA^A'],
-            ssn: '555443333',
-            active_status: 'active',
-            address: nil,
-            home_phone: '1112223333',
-            suffix: 'Sr'
-          )
+          expect(find_candidate_response.body).to have_deep_attributes(va_profile)
         end
       end
     end
@@ -105,31 +55,12 @@ describe MVI::Responses::FindCandidate do
     let(:faraday_response) { instance_double('Faraday::Response') }
     let(:body) { Ox.parse(File.read('spec/support/mvi/find_candidate_missing_attrs.xml')) }
     let(:find_candidate_missing_attrs) { MVI::Responses::FindCandidate.new(faraday_response) }
+    let(:va_profile_mvi_response) { build(:va_profile_mvi_response, given_names: %w(Mitchell)) }
 
     describe '#body' do
       it 'should filter with only first name and retrieve correct MHV id' do
         allow(faraday_response).to receive(:body) { body }
-        expect(find_candidate_missing_attrs.body).to eq(
-          birth_date: '19490304',
-          edipi: nil,
-          mhv_ids: ['1100792239^PI^200MHS^USVHA^A'],
-          vba_corp_id: '9100792239^PI^200CORP^USVBA^A',
-          family_name: 'Jenkins',
-          gender: 'M',
-          given_names: %w(Mitchell),
-          icn: '1008714701V416111^NI^200M^USVHA^P',
-          ssn: '796122306',
-          active_status: 'active',
-          address: {
-            street_address_line: '121 A St',
-            city: 'Austin',
-            state: 'TX',
-            postal_code: '78772',
-            country: 'USA'
-          },
-          home_phone: nil,
-          suffix: nil
-        )
+        expect(find_candidate_missing_attrs.body).to have_deep_attributes(va_profile_mvi_response)
       end
     end
   end
@@ -230,33 +161,14 @@ describe MVI::Responses::FindCandidate do
     let(:faraday_response) { instance_double('Faraday::Response') }
     let(:body) { Ox.parse(File.read('spec/support/mvi/find_candidate_multiple_mhv_response.xml')) }
     let(:find_candidate_multiple_mhvids) { MVI::Responses::FindCandidate.new(faraday_response) }
+    let(:va_profile_mvi_mhvids) { build(:va_profile_mvi_mhvids) }
 
     before(:each) do
       allow(faraday_response).to receive(:body) { body }
     end
 
     it 'returns an array of mhv ids' do
-      expect(find_candidate_multiple_mhvids.body).to eq(
-        birth_date: '19800101',
-        edipi: '1122334455^NI^200DOD^USDOD^A',
-        vba_corp_id: '12345678^PI^200CORP^USVBA^A',
-        family_name: 'Ranger',
-        gender: 'M',
-        given_names: %w(Steve A),
-        icn: '12345678901234567^NI^200M^USVHA^P',
-        mhv_ids: %w(12345678901^PI^200MH^USVHA^A 12345678902^PI^200MH^USVHA^A),
-        ssn: '111223333',
-        active_status: 'active',
-        address: {
-          street_address_line: '42 MAIN ST',
-          city: 'SPRINGFIELD',
-          state: 'IL',
-          postal_code: '62722',
-          country: 'USA'
-        },
-        home_phone: '1112223333 p1',
-        suffix: nil
-      )
+      expect(find_candidate_multiple_mhvids.body).to have_deep_attributes(va_profile_mvi_mhvids)
     end
   end
 end

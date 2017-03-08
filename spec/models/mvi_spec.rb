@@ -2,23 +2,10 @@
 require 'rails_helper'
 require 'common/exceptions'
 
-describe MviResponse, skip_mvi: true do
+describe Mvi, skip_mvi: true do
   let(:user) { FactoryGirl.build(:loa3_user) }
-  let(:mvi) { MviResponse.from_user(user) }
-  let(:find_candidate_response) do
-    {
-      birth_date: '19800101',
-      edipi: '1234^NI^200DOD^USDOD^A',
-      vba_corp_id: '12345678^PI^200CORP^USVBA^A',
-      family_name: 'Smith',
-      gender: 'M',
-      given_names: %w(John William),
-      icn: '1000123456V123456^NI^200M^USVHA^P',
-      mhv_ids: ['123456^PI^200MHV^USVHA^A'],
-      ssn: '555443333',
-      active_status: 'active'
-    }
-  end
+  let(:mvi) { Mvi.from_user(user) }
+  let(:va_profile) { build(:va_profile) }
 
   describe '.from_user' do
     it 'creates an instance with user attributes' do
@@ -31,19 +18,15 @@ describe MviResponse, skip_mvi: true do
     context 'when the cache is empty' do
       context 'with a succesful MVI response' do
         it 'should cache and return the response' do
-          allow_any_instance_of(MVI::Service).to receive(:find_candidate).and_return(find_candidate_response)
+          allow_any_instance_of(MVI::Service).to receive(:find_candidate).and_return(va_profile)
           expect(mvi.redis_namespace).to receive(:set).once.with(
             user.uuid,
             Oj.dump(
-              uuid: 'b2fab2b5-6af0-45e1-a9e2-394347af91ef',
-              response: find_candidate_response.merge(status: 'OK')
+              uuid: user.uuid,
+              response: va_profile
             )
           )
-          expect_any_instance_of(MVI::Service).to receive(:find_candidate).once
-          expect(mvi.edipi).to eq(find_candidate_response[:edipi].split('^').first)
-          expect(mvi.icn).to eq(find_candidate_response[:icn].split('^').first)
-          expect(mvi.mhv_correlation_id).to eq(find_candidate_response[:mhv_ids].first.split('^').first)
-          expect(mvi.participant_id).to eq(find_candidate_response[:vba_corp_id].split('^').first)
+          expect(mvi.edipi).to eq(va_profile.edipi.split('^').first)
         end
       end
 
@@ -53,7 +36,7 @@ describe MviResponse, skip_mvi: true do
             Common::Client::Errors::HTTPError.new('MVI HTTP call failed', 500)
           )
           expect(Rails.logger).to receive(:error).once.with(/MVI HTTP error code: 500 for user:/)
-          expect(mvi.va_profile).to eq(status: MviResponse::MVI_RESPONSE_STATUS[:server_error])
+          expect { mvi.va_profile }.to raise_error(MVI::Errors::ServiceError)
         end
       end
 
@@ -63,7 +46,7 @@ describe MviResponse, skip_mvi: true do
           expect(Rails.logger).to receive(:error).once.with(
             /MVI service error: MVI::Errors::InvalidRequestError for user:/
           )
-          expect(mvi.va_profile).to eq(status: MviResponse::MVI_RESPONSE_STATUS[:server_error])
+          expect { mvi.va_profile }.to raise_error(MVI::Errors::InvalidRequestError)
         end
       end
 
@@ -73,26 +56,17 @@ describe MviResponse, skip_mvi: true do
             MVI::Errors::RecordNotFound.new('not found')
           )
           expect(Rails.logger).to receive(:error).once.with(/MVI record not found for user:/)
-          expect(mvi.va_profile).to eq(status: MviResponse::MVI_RESPONSE_STATUS[:not_found])
+          expect { mvi.va_profile }.to raise_error(MVI::Errors::RecordNotFound)
         end
       end
     end
 
     context 'when there is cached data' do
       it 'returns the cached data' do
-        mvi.response = find_candidate_response.merge(status: 'OK')
+        mvi.response = va_profile
         mvi.save
         expect_any_instance_of(MVI::Service).to_not receive(:find_candidate)
-        expect(mvi.va_profile).to eq(
-          birth_date: '19800101',
-          family_name: 'Smith',
-          gender: 'M',
-          given_names: %w(John William),
-          status: MviResponse::MVI_RESPONSE_STATUS[:ok],
-          address: nil,
-          home_phone: nil,
-          suffix: nil
-        )
+        expect(mvi.va_profile).to have_deep_attributes(va_profile)
       end
     end
   end
