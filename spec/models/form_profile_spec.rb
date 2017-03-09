@@ -14,15 +14,15 @@ RSpec.describe FormProfile, type: :model do
       },
       'veteranDateOfBirth' => user.birth_date,
       'veteranAddress' => {
-        'street' => user.va_profile[:address][:street],
+        'street' => user.va_profile.address.street,
         'street_2' => nil,
-        'city' => user.va_profile[:address][:city],
-        'state' => user.va_profile[:address][:state],
-        'country' => user.va_profile[:address][:country],
-        'postal_code' => user.va_profile[:address][:postal_code]
+        'city' => user.va_profile.address.city,
+        'state' => user.va_profile.address.state,
+        'country' => user.va_profile.address.country,
+        'postal_code' => user.va_profile.address.postal_code
       },
       'gender' => user.gender,
-      'homePhone' => user.va_profile[:home_phone]
+      'homePhone' => user.va_profile.home_phone
     }
   end
 

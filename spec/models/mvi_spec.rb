@@ -18,7 +18,7 @@ describe Mvi, skip_mvi: true do
     context 'when the cache is empty' do
       context 'with a succesful MVI response' do
         it 'should cache and return the response' do
-          allow_any_instance_of(MVI::Service).to receive(:find_candidate).and_return(va_profile)
+          expect_any_instance_of(MVI::Service).to receive(:find_candidate).once.and_return(va_profile)
           expect(mvi.redis_namespace).to receive(:set).once.with(
             user.uuid,
             Oj.dump(
@@ -27,6 +27,9 @@ describe Mvi, skip_mvi: true do
             )
           )
           expect(mvi.edipi).to eq(va_profile.edipi.split('^').first)
+          expect(mvi.icn).to eq(va_profile.icn.split('^').first)
+          expect(mvi.mhv_correlation_id).to eq(va_profile.mhv_ids.first.split('^').first)
+          expect(mvi.participant_id).to eq(va_profile.vba_corp_id.split('^').first)
         end
       end
 
