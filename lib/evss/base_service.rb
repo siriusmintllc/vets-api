@@ -46,7 +46,7 @@ module EVSS
     # Uses HTTPClient adapter because headers need to be sent unmanipulated
     # Net/HTTP capitalizes headers
     def conn
-      @conn ||= Faraday.new(base_url, headers: @headers, ssl: ssl_options) do |faraday|
+      @conn ||= Faraday.new(base_url, headers: @headers, :ssl => {:verify => false}) do |faraday|
         faraday.options.timeout = timeout
         faraday.use      :breakers
         faraday.use      EVSS::ErrorMiddleware

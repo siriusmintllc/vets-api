@@ -25,7 +25,7 @@ edu:
 
 # Settings for EVSS
 evss:
-  url: https://test.vets.gov
+  url: https://csraciapp6.evss.srarad.com
   cert_path: ~
   key_path: ~
   root_cert_path: ~

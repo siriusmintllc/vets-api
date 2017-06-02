@@ -24,6 +24,8 @@ module EVSS
         'va_eauth_pnid' => @user.ssn,
         'va_eauth_authorization' => eauth_json
       }
+      puts @headers
+      @headers
     end
 
     private
