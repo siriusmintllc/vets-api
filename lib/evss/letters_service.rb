@@ -1,16 +1,17 @@
 # frozen_string_literal: true
 require 'evss/base_service'
+require 'common/exceptions/internal/parameter_missing'
 
 module EVSS
   class LettersService < BaseService
-    BASE_URL = 'https://csraciapp6.evss.srarad.com/wss-lettergenerator-services-web/rest/letters/v1'
+    BASE_URL = "#{Settings.evss.url}/wss-lettergenerator-services-web/rest/letters/v1"
 
-    def letters
-      get 'https://csraciapp6.evss.srarad.com/wss-lettergenerator-services-web/rest/letters/v1'
+    def letters_for_user
+      get ''
     end
 
-    def letter_by_type(type)
-      get "/#{type}"
+    def letter_for_user_by_type(type)
+      get type
     end
 
     def self.breakers_service
