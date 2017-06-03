@@ -8,8 +8,8 @@ class EVSSLetterService
   end
 
   def all
-    response = client.letters
-
+    response = client.letters_for_user
+    puts response
   end
 
   def download_pdf(type)
