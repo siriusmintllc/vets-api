@@ -10,12 +10,20 @@ module Common
         def configuration(configuration = nil)
           @configuration ||= configuration.instance
         end
+
+        def stub_configuration(stub_configuration = nil)
+          @stub_configuration ||= stub_configuration.instance
+        end
+      end
+
+      def initialize(stub_responses: false)
+        @stub_responses = stub_responses
       end
 
       private
 
       def config
-        self.class.configuration
+        @stub_responses ? self.class.stub_configuration : self.class.configuration
       end
 
       # memoize the connection from config

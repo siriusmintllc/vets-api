@@ -133,4 +133,12 @@ describe MVI::Service do
       end
     end
   end
+
+  describe 'stubbed find_profile' do
+    let(:response) { MVI::Service.new(stub_responses: true).find_profile(user) }
+
+    it 'parses the stubbed response' do
+      expect(response).to be_a(MVI::Responses::FindProfileResponse)
+    end
+  end
 end

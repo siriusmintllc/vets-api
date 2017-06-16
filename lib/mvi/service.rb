@@ -22,6 +22,7 @@ module MVI
 
     # @return [MVI::Configuration] the configuration for this service
     configuration MVI::Configuration
+    stub_configuration MVI::StubConfiguration
 
     # Given a user queries MVI and returns their VA profile.
     #
