@@ -3948,7 +3948,7 @@ find_candidate:
     :vha_facility_ids: []
     :edipi: '5343578988'
     :participant_id: '204225751'
-'301010301':
+  '301010301':
     :given_names:
     - Jean
     - Z
@@ -3964,7 +3964,7 @@ find_candidate:
     :vha_facility_ids: []
     :edipi: '5343578988'
     :participant_id: '204225751'
-'796066620':
+  '796066620':
     :given_names:
     - Srikanth
     - Z
