@@ -35,6 +35,10 @@ guard: db
 lint: db
 	@$(BASH_DEV) "bundle exec rake lint"
 
+.PHONY: profile
+profile:
+	@RAILS_ENV=benchmark $(BASH_TEST) "bundle exec rake test:profile"
+
 .PHONY: rebuild
 rebuild:
 	@$(COMPOSE_DEV) build
