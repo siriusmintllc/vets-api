@@ -33,6 +33,9 @@ development: &defaults
     namespace: pciu-address-dependencies
     each_ttl: 604800
 
+benchmark:
+  <<: *defaults
+
 test:
   <<: *defaults
 

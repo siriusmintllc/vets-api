@@ -8,3 +8,10 @@ require File.expand_path('../config/application', __FILE__)
 Dir[Rails.root.join('lib/tasks/support/**/*.rb')].each { |f| require f }
 
 Rails.application.load_tasks
+
+Rake.application.instance_eval do
+  # remove test:prepare from prerequisites for benchmark and profile jobs
+  # see: https://github.com/rails/rails-perftest/issues/24
+  @tasks['test:benchmark'].prerequisites.shift if @tasks['test:benchmark']
+  @tasks['test:profile'].prerequisites.shift if @tasks['test:profile']
+end

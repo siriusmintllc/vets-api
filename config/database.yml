@@ -78,3 +78,6 @@ test:
 #
 production:
   url: <%= Settings.database_url %>
+
+benchmark:
+  url: <%= Settings.database_url %>

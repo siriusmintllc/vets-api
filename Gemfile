@@ -63,6 +63,11 @@ gem 'vets_json_schema', git: 'https://github.com/department-of-veterans-affairs/
 gem 'virtus'
 gem 'will_paginate'
 
+group :benchmark do
+  gem 'rails-perftest'
+  gem 'ruby-prof', '0.15.9' # see: https://github.com/rails/rails-perftest/issues/38
+end
+
 group :development do
   gem 'guard-rubocop'
   gem 'spring', platforms: :ruby # Spring speeds up development by keeping your application running in the background

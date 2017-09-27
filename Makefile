@@ -11,6 +11,10 @@ default: ci
 bash:
 	@$(COMPOSE_DEV) $(BASH)
 
+.PHONY: benchmark
+benchmark:
+	@RAILS_ENV=benchmark $(BASH_TEST) "bundle exec rake test:benchmark"
+
 .PHONY: ci
 ci:
 	@$(BASH_TEST) "bundle exec rake db:setup db:migrate ci"
@@ -31,6 +35,10 @@ guard: db
 lint: db
 	@$(BASH_DEV) "bundle exec rake lint"
 
+.PHONY: rebuild
+rebuild:
+	@$(COMPOSE_DEV) build
+
 .PHONY: security
 security: db
 	@$(BASH_DEV) "bundle exec rake security"
@@ -42,10 +50,6 @@ spec:
 .PHONY: up
 up: db
 	@$(COMPOSE_DEV) up
-
-.PHONY: rebuild
-rebuild:
-	@$(COMPOSE_DEV) build
 
 .PHONY: clean
 clean:
