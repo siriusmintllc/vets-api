@@ -12,7 +12,7 @@ bash:
 	@$(COMPOSE_DEV) $(BASH)
 
 .PHONY: benchmark
-benchmark:
+benchmark: db
 	@RAILS_ENV=benchmark $(BASH_TEST) "bundle exec rake test:benchmark"
 
 .PHONY: ci
@@ -36,7 +36,7 @@ lint: db
 	@$(BASH_DEV) "bundle exec rake lint"
 
 .PHONY: profile
-profile:
+profile: db
 	@RAILS_ENV=benchmark $(BASH_TEST) "bundle exec rake test:profile"
 
 .PHONY: rebuild
