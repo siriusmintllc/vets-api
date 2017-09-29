@@ -26,6 +26,7 @@ unless ENV['NOCOVERAGE']
     add_filter 'lib/config_helper.rb'
     add_filter 'lib/feature_flipper.rb'
     add_filter 'spec'
+    add_filter 'test'
     add_filter 'vendor'
     SimpleCov.minimum_coverage_by_file 90
     SimpleCov.refuse_coverage_drop
