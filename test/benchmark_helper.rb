@@ -6,6 +6,6 @@ require 'rails/test_help'
 require 'rails/performance_test_help'
 
 class ActionDispatch::PerformanceTest
-  self.profile_options = { runs: 5, metrics: [:wall_time, :process_time, :objects, :gc_runs, :gc_time],
-                           output: 'tmp/performance', formats: [:flat, :graph_html, :call_tree, :call_stack] }
+  self.profile_options = { runs: 5, metrics: [:wall_time, :process_time],
+                           output: 'tmp/performance', formats: [:graph_html, :call_tree] }
 end

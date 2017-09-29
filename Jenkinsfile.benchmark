@@ -1,0 +1,29 @@
+pipeline {
+  agent {
+    label 'vetsgov-general-purpose'
+  }
+
+  stages {
+    stage('Checkout Code') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Run tests') {
+      steps {
+        withEnv(['RAILS_ENV=benchmark', 'CI=true']) {
+          sh 'make benchmark'
+        }
+      }
+    }
+  }
+  post {
+        always {
+            archive "tmp/performance/**"
+            step([$class: 'PlotBuilder', csvFileName: 'tmp/performance/Sessions\#test_homepage_process_time.csv', csvSeries: [[displayTableFlag: false, exclusionValues: '', file: 'data.plot', inclusionFlag: 'measurement', url: '']], exclZero: false, group: 'Group1', keepRecords: true, logarithmic: false, numBuilds: '30', style: 'line', title: 'Homepage', useDescr: false, yaxis: 'Sample', yaxisMaximum: '', yaxisMinimum: ''])
+            sh 'make clean'
+            deleteDir() /* clean up our workspace */
+        }
+  }
+}
