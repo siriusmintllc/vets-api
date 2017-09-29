@@ -12,8 +12,8 @@ bash:
 	@$(COMPOSE_DEV) $(BASH)
 
 .PHONY: benchmark
-benchmark: db
-	@RAILS_ENV=benchmark $(BASH_TEST) "bundle exec rake test:benchmark"
+benchmark:
+	@RAILS_ENV=benchmark $(BASH_TEST) "bundle exec rake db:setup db:migrate test:benchmark"
 
 .PHONY: ci
 ci:
