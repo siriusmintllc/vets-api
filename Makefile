@@ -36,8 +36,8 @@ lint: db
 	@$(BASH_DEV) "bundle exec rake lint"
 
 .PHONY: profile
-profile: db
-	@RAILS_ENV=benchmark $(BASH_TEST) "bundle exec rake test:profile"
+profile:
+	@RAILS_ENV=benchmark $(BASH_TEST) "bundle exec rake db:setup db:migrate test:profile"
 
 .PHONY: rebuild
 rebuild:
