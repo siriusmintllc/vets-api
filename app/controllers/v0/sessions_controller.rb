@@ -77,61 +77,30 @@ module V0
     end
 
     def saml_callback
-      @saml_response = OneLogin::RubySaml::Response.new(
-        params[:SAMLResponse], settings: saml_settings
-      )
-
-      if @saml_response.is_valid? && persist_session_and_user
-        async_create_evss_account(@current_user)
-        redirect_to Settings.saml.relay + '?token=' + @session.token
-
-        obscure_token = Session.obscure_token(@session.token)
-        Rails.logger.info("Logged in user with id #{@session.uuid}, token #{obscure_token}")
-        Benchmark::Timer.stop(TIMER_LOGIN_KEY, @saml_response.in_response_to, tags: benchmark_tags('status:success'))
-        StatsD.increment(STATSD_CALLBACK_KEY, tags: ['status:success', "context:#{context_key}"])
-      else
-        handle_login_error
-        redirect_to Settings.saml.relay + '?auth=fail'
-        Benchmark::Timer.stop(TIMER_LOGIN_KEY, @saml_response.in_response_to, tags: benchmark_tags('status:failure'))
+      IdentityService::Callback.new(params[:SAMLResponse]) do |callback|
+        IdentityService::Persist.new(callback.saml_response) do |login|
+          @current_user = login.user
+          @session = login.session
+          async_create_evss_account(@current_user)
+          redirect_to Settings.saml.relay + '?token=' + @session.token
+          obscure_token = Session.obscure_token(@session.token)
+          Rails.logger.info("Logged in user with id #{@session.uuid}, token #{obscure_token}")
+          Benchmark::Timer.stop(TIMER_LOGIN_KEY, @saml_response.in_response_to, tags: benchmark_tags('status:success'))
+          StatsD.increment(STATSD_CALLBACK_KEY, tags: ['status:success', "context:#{context_key}"])
+        end
       end
+    rescue IdentityService::SAMLResponseError => e
+      handle_login_error(callback_service.saml_response)
+      redirect_to Settings.saml.relay + '?auth=fail'
+      Benchmark::Timer.stop(TIMER_LOGIN_KEY, @saml_response.in_response_to, tags: benchmark_tags('status:failure'))
     ensure
       StatsD.increment(STATSD_LOGIN_TOTAL_KEY)
     end
 
     private
 
-    def saml_user
-      @saml_user ||= SAML::User.new(@saml_response)
-    end
-
-    # This is used in persist_session_and_user
-    def new_user_from_saml
-      @new_user_from_saml ||= User.new(saml_user.to_hash)
-    end
-
-    def persist_session_and_user
-      @session = Session.new(uuid: new_user_from_saml.uuid)
-      existing_user = User.find(@session.uuid)
-
-      @current_user =
-        # Completely new signin, both session and current user will be persisted
-        if existing_user.nil?
-          StatsD.increment(STATSD_LOGIN_NEW_USER_KEY)
-          new_user_from_saml
-        # Existing user. Updated attributes as a result of enabling multifactor
-        elsif saml_user.changing_multifactor?
-          existing_user.multifactor = saml_user.decorated.multifactor
-          existing_user
-        # Existing user. Updated attributes as a result of completing identity proof
-        else
-          User.from_merged_attrs(existing_user, new_user_from_saml)
-        end
-
-      @session.save && @current_user.save
-    end
-
-    def handle_login_error
-      fail_handler = SAML::AuthFailHandler.new(@saml_response, @current_user, @session)
+    def handle_login_error(saml_response)
+      fail_handler = SAML::AuthFailHandler.new(saml_response, nil, nil)
       StatsD.increment(STATSD_CALLBACK_KEY, tags: ['status:failure', "context:#{context_key}"])
       StatsD.increment(STATSD_LOGIN_FAILED_KEY, tags: ["error:#{fail_handler.error}"])
       if fail_handler.known_error?
