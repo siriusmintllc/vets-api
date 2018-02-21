@@ -10,6 +10,7 @@ require 'saml/user'
 
 class User < Common::RedisStore
   include BetaSwitch
+  include Authorization
 
   UNALLOCATED_SSN_PREFIX = '796' # most test accounts use this
 
