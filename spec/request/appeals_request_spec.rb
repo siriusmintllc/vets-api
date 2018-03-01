@@ -18,9 +18,11 @@ RSpec.describe 'Appeals Status', type: :request do
 
   context 'loa3 user in the mocks' do
     let(:user) { FactoryBot.create(:user, :loa3, ssn: '111223333') }
-
     it 'returns a successful response' do
       get '/v0/appeals', nil, 'Authorization' => "Token token=#{session.token}"
+      # puts request.env.inspect
+      document(:ok).with_schema('appeals_status')
+      # expect(response).to respond(:ok).with_schema('appeals_status')
       expect(response).to have_http_status(:ok)
       expect(response.body).to be_a(String)
       expect(response).to match_response_schema('appeals_status')
