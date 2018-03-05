@@ -21,11 +21,10 @@ RSpec.describe 'Appeals Status', type: :request do
 
     before do
       document :get, '/v0/appeals',
-        heading: 'List appeals',
         description: 'Returns a list of appeals by logged-in user SSN'
     end
 
-    it 'returns a successful response' do |example|
+    it 'returns a successful response' do
       get '/v0/appeals', nil, 'Authorization' => "Token token=#{session.token}"
       expect(response).to document_status(:ok).with_schema('appeals_status')
     end

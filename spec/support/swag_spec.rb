@@ -16,6 +16,7 @@ module RSpec
           @response = response
           result = matches_http_status_code? && matches_schema?
           document_endpoint if result
+          result
         end
 
         def with_schema(schema_filename, opts = {})
@@ -47,21 +48,22 @@ module RSpec
         end
 
         def document_endpoint
+          return unless ENV['spec']
+          puts "ENV #{ENV['spec'].inspect}"
           schema_file = File.open(@schema_path, 'rb')
-          Documenter.instance.document_response(
-            method: @request.env['REQUEST_METHOD'].downcase.to_s,
+          Documentation::Generator.instance.add_response(
+            method: @request.env['REQUEST_METHOD'].downcase.to_sym,
             path: @request.env['PATH_INFO'],
             status: @response.status,
             body: @response.body,
             schema: schema_file.read
           )
-          schema_file.close
-          puts Documenter.instance.inspect
         end
       end
 
-      def document(method, path, heading: nil, description: nil)
-        Documenter.instance.add_resource(method, path, heading, description)
+      def document(method, path, description: nil)
+        return unless ENV['spec']
+        Documentation::Generator.instance.add_resource(method, path, description)
       end
 
       def document_status(status)
@@ -69,40 +71,4 @@ module RSpec
       end
     end
   end
-end
-
-class Documenter
-  include Singleton
-
-  def initialize
-    @resources = {}
-  end
-
-  def add_resource(method, path, heading, description)
-    raise 'resource already defined!' if @resources.has_key? [method, path]
-    @resources[[method, path]] = { heading: heading, description: description }
-  end
-
-  def document_response(method:, path:, status:, body:, schema:)
-    resource = @resources[[method, path]]
-    resource.add_response(status, body, schema)
-  end
-end
-
-class Resource
-  attr_accessor :heading, :description, :responses
-
-  def initialize(heading, description)
-    @heading = heading
-    @description = description
-    @responses = {}
-  end
-
-  def add_response(status, body, schema)
-    @responses << Response.new(status, body, schema)
-  end
-end
-
-class Response
-  attr_accessor :status, :body, :schema
 end

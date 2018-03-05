@@ -14,6 +14,7 @@ require 'support/impl_matchers'
 require 'support/negated_matchers'
 require 'support/stub_emis'
 require 'pundit/rspec'
+require 'documentation/after_hook'
 
 # By default run SimpleCov, but allow an environment variable to disable.
 unless ENV['NOCOVERAGE']
@@ -104,6 +105,7 @@ RSpec.configure do |config|
   config.include SpecBuilders
   config.include SpoolHelpers
   config.include FixtureHelpers
+  config.include Documentation::AfterHook
 
   config.around(:example, :run_at) do |example|
     Timecop.freeze(Time.zone.parse(example.metadata[:run_at]))
