@@ -162,6 +162,16 @@ ActiveRecord::Schema.define(version: 20180226234916) do
     t.string   "encrypted_file_data_iv", null: false
   end
 
+  create_table "preneed_attachments", force: :cascade do |t|
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+    t.uuid     "guid",                   null: false
+    t.string   "encrypted_file_data",    null: false
+    t.string   "encrypted_file_data_iv", null: false
+  end
+
+  add_index "preneed_attachments", ["guid"], name: "index_preneed_attachments_on_guid", unique: true, using: :btree
+
   create_table "preneed_submissions", force: :cascade do |t|
     t.string   "tracking_number",    null: false
     t.string   "application_uuid"

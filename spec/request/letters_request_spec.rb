@@ -16,12 +16,16 @@ RSpec.describe 'letters', type: :request do
   end
 
   describe 'GET /v0/letters' do
+    # before do
+    #   document :get, '/v0/letters',
+    #     description: 'Returns a list of the users letters available for download'
+    # end
+
     context 'with a valid evss response' do
       it 'should match the letters schema' do
         VCR.use_cassette('evss/letters/letters') do
           get '/v0/letters', nil, auth_header
-          expect(response).to have_http_status(:ok)
-          expect(response).to match_response_schema('letters')
+          expect(response).to document_status(:ok).with_schema('letters')
         end
       end
     end
@@ -60,6 +64,11 @@ RSpec.describe 'letters', type: :request do
   end
 
   describe 'POST /v0/letters/:id' do
+    before do
+      document :post, '/v0/letters/{id}',
+        description: 'downloads a pdf'
+    end
+
     context 'with no options' do
       it 'should download a PDF' do
         VCR.use_cassette('evss/letters/download') do

@@ -49,8 +49,8 @@ module RSpec
 
         def document_endpoint
           return unless ENV['spec']
-          puts "ENV #{ENV['spec'].inspect}"
           schema_file = File.open(@schema_path, 'rb')
+          puts @request.env['REQUEST_METHOD']
           Documentation::Generator.instance.add_response(
             method: @request.env['REQUEST_METHOD'].downcase.to_sym,
             path: @request.env['PATH_INFO'],
@@ -61,7 +61,7 @@ module RSpec
         end
       end
 
-      def document(method, path, description: nil)
+      def document(method, path, description: nil, parameters: nil)
         return unless ENV['spec']
         Documentation::Generator.instance.add_resource(method, path, description)
       end
