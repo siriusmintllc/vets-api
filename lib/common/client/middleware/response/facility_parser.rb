@@ -65,7 +65,6 @@ module Common
 
           def clean_benefits(benefits_hash)
             benefits_hash.keys.select { |key| benefits_hash[key] == YES }
-            benefits_hash.select { |(_key, value)| value == YES }.map(&:first)
           end
 
           def strip(value)
