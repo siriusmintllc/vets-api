@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe BaseFacility, type: :model do
+RSpec.fdescribe BaseFacility, type: :model do
   let(:bbox) { [-73.401, 40.685, -77.36, 43.03] }
   let(:services) { nil }
   let(:va_facilities) { VAFacility.query(bbox: bbox, type: type, services: services) }

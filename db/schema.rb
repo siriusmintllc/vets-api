@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180226234916) do
+ActiveRecord::Schema.define(version: 20180315202104) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,8 +23,8 @@ ActiveRecord::Schema.define(version: 20180226234916) do
     t.string   "facility_type",  null: false
     t.string   "classification"
     t.string   "website"
-    t.float    "lat",            null: false
-    t.float    "long",           null: false
+    t.string   "lat",            null: false
+    t.string   "long",           null: false
     t.jsonb    "address"
     t.jsonb    "phone"
     t.jsonb    "hours"

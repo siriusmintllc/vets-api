@@ -32,8 +32,10 @@ module Common
           # FIXME: Clean up this flow in a future pass
           def attribute_mappings(entry, mapping)
             attrs = entry['attributes']
+            attrs['geometry-x'] = entry['geometry']['x']
+            attrs['geometry-y'] = entry['geometry']['y']
             mapped_attrs = { 'address' => {}, 'services' => {} }
-            mapping.slice('unique_id', 'name', 'classification', 'website').each do |key, value|
+            mapping.slice('unique_id', 'name', 'classification', 'website', 'lat', 'long').each do |key, value|
               mapped_attrs[key] = strip(attrs[value])
             end
             %w[hours access feedback phone].each do |name|
@@ -50,7 +52,8 @@ module Common
             mapped_attrs['services']['last_updated'] = services_date(attrs) if mapping['services']
             mapped_attrs['services']['health'] = services_from_gis(mapping['services'], attrs) if mapping['services']
 
-            mapped_attrs.merge!('lat' => entry['geometry']['y'], 'long' => entry['geometry']['x'])
+            mapped_attrs
+            # mapped_attrs.merge!('lat' => entry['geometry']['y'], 'long' => entry['geometry']['x'])
           end
 
           def build_nested_content(item, attrs)
@@ -138,6 +141,8 @@ module Common
           HOURS_STANDARD_MAP = DateTime::DAYNAMES.each_with_object({}) { |d, h| h[d] = d }
 
           NCA_MAP = {
+            'lat' => 'geometry-y',
+            'long' => 'geometry-x',
             'unique_id' => 'SITE_ID',
             'name' => 'FULL_NAME',
             'classification' => 'SITE_TYPE',
@@ -155,6 +160,8 @@ module Common
                          'Sunday' => 'VISITATION_HOURS_WEEKEND' }
           }.freeze
           VBA_MAP = {
+            'lat' => 'geometry-y',
+            'long' => 'geometry-x',
             'unique_id' => 'Facility_Number',
             'name' => 'Facility_Name',
             'classification' => 'Facility_Type',
@@ -184,6 +191,8 @@ module Common
           }.freeze
 
           VC_MAP = {
+            'lat' => 'lat',
+            'long' => 'lon',
             'unique_id' => 'stationno',
             'name' => 'stationname',
             'classification' => 'vet_center',
@@ -195,6 +204,8 @@ module Common
           }.freeze
 
           VHA_MAP = {
+            'lat' => 'Latitude',
+            'long' => 'Longitude',
             'unique_id' => 'StationNumber',
             'name' => 'StationName',
             'classification' => 'CocClassification',

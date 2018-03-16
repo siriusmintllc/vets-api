@@ -11,6 +11,15 @@ Rails.application.routes.draw do
       to: 'v0/sessions#new',
       constraints: ->(request) { V0::SessionsController::REDIRECT_URLS.include?(request.path_parameters[:type]) }
 
+  match '/vbeta/*path', to: 'application#cors_preflight', via: [:options]
+  namespace :vbeta, defaults: { format: 'json' } do
+    scope :facilities, module: 'facilities' do
+      resources :va, only: %i[index show], defaults: { format: :json } do
+        get :all, on: :collection
+      end
+    end
+  end
+
   namespace :v0, defaults: { format: 'json' } do
     resources :in_progress_forms, only: %i[index show update destroy]
     resource :claim_documents, only: [:create]
