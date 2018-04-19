@@ -50,7 +50,7 @@ module SAML
 
     def clicked_deny?
       return false unless only_one_error? && @saml_response.status_message == CLICKED_DENY_MSG
-      set_sentry_params(CLICKED_DENY_MSG, :warn)
+      set_sentry_params(CLICKED_DENY_MSG, :info)
     end
 
     def auth_too_late?
