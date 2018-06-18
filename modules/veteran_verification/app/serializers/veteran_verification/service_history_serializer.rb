@@ -2,14 +2,11 @@
 
 module VeteranVerification
   class ServiceHistorySerializer < ActiveModel::Serializer
-    attribute :service_history
+    attributes :branch_of_service, :start_date, :end_date, :dischange_status, :deployments
 
     def id
       nil
     end
 
-    def service_history
-      object
-    end
   end
 end

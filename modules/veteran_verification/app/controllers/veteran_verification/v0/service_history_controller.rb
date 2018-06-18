@@ -5,10 +5,10 @@ module VeteranVerification
     class ServiceHistoryController < ApplicationController
       before_action { authorize :emis, :access? }
 
-      def show
-        response = ServiceHistory.from_user(@current_user)
+      def index
+        response = ServiceHistory.for_user(@current_user)
 
-        render json: response, serializer: ServiceHistorySerializer
+        render json: response, each_serializer: ServiceHistorySerializer
       end
     end
   end
