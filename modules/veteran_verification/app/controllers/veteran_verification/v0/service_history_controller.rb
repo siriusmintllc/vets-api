@@ -8,7 +8,7 @@ module VeteranVerification
       def index
         response = ServiceHistoryEpisode.for_user(@current_user)
 
-        render json: response, each_serializer: ServiceHistorySerializer
+        render json: response, each_serializer: VeteranVerification::ServiceHistorySerializer
       end
     end
   end

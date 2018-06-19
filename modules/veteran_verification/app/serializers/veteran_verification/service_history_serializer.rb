@@ -5,7 +5,7 @@ module VeteranVerification
     attributes :branch_of_service, :start_date, :end_date, :discharge_status, :deployments
 
     def type
-      "service_history_episodes"
+      'service_history_episodes'
     end
   end
 end
