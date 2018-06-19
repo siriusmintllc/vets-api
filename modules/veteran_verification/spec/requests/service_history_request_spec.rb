@@ -20,10 +20,9 @@ RSpec.describe 'Service History API endpoint', type: :request, skip_emis: true d
       VCR.use_cassette('emis/get_deployment/valid') do
         VCR.use_cassette('emis/get_military_service_episodes/valid') do
           get '/services/veteran_verification/v0/service_history', nil, auth_header
-          p response.body
           expect(response).to have_http_status(:ok)
           expect(response.body).to be_a(String)
-          expect(response).to match_response_schema('service_and_deployment_history')
+          expect(response).to match_response_schema('service_and_deployment_history_response')
         end
       end
     end
