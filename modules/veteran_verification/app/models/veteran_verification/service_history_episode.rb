@@ -5,7 +5,7 @@ module VeteranVerification
     include ActiveModel::Serialization
     include Virtus.model
 
-    attribute :id, Digest::UUID
+    attribute :id, String
     attribute :branch_of_service, String
     attribute :end_date, Date
     attribute :deployments, Array
