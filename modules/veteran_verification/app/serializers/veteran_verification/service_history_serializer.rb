@@ -3,9 +3,6 @@
 module VeteranVerification
   class ServiceHistorySerializer < ActiveModel::Serializer
     attributes :branch_of_service, :start_date, :end_date, :discharge_status, :deployments
-
-    def type
-      'service_history_episodes'
-    end
+    type 'service_history_episodes'
   end
 end
