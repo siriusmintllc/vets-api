@@ -244,6 +244,10 @@ saml:
   relay: http://localhost:3001/auth/login/callback
   logout_relay: http://localhost:3001/logout
 
+oidc:
+  auth_server_metadata_url: ~
+  issuer: ~
+
 sentry:
   dsn: ~
 
