@@ -230,6 +230,7 @@ Rails.application.routes.draw do
   scope '/services' do
     mount VBADocuments::Engine, at: '/vba_documents'
     mount AppealsApi::Engine, at: '/appeals'
+    mount VeteranVerification::Engine, at: '/veteran_verification'
   end
 
   if Rails.env.development? || Settings.sidekiq_admin_panel
