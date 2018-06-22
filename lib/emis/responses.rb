@@ -15,3 +15,8 @@ require 'emis/responses/get_retirement_pay_response'
 require 'emis/responses/get_separation_pay_response'
 require 'emis/responses/get_unit_information_response'
 require 'emis/responses/get_veteran_status_response'
+
+module EMIS
+  module Responses
+  end
+end
