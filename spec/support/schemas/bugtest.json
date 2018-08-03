@@ -1,12 +1,21 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "properties": {
-    "alpha": {
-      "type": "string"
-    },
-    "beta": {
-      "type": "string"
+    "an_array" : {
+      "properties": {
+        "alpha": {
+          "type": "string"
+        },
+        "beta": {
+          "type": "string"
+        }
+      },
+      "items": {
+        "type": "hash"
+      }
+      ,"type": "array"
     }
+
   },
   "type": "object"
 }

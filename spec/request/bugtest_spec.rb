@@ -9,8 +9,12 @@ RSpec.describe 'JSON::Validator "strict" mode', type: :request do
   it 'should pass when the properties match exactly' do
 
     tester = {
-      alpha: 'foo',
-      beta: 'foo'
+      an_array: [
+        {
+          alpha: 'foo',
+          beta: 'foo'
+        }
+      ]
     }
 
     schema_path = Rails.root.join('spec', 'support', 'schemas', "bugtest.json")
@@ -24,7 +28,11 @@ RSpec.describe 'JSON::Validator "strict" mode', type: :request do
   it 'should fail when a property in the schema is missing' do
 
     tester = {
-      alpha: 'foo'
+      an_array: [
+        {
+          alpha: 'foo',
+        }
+      ]
     }
 
     schema_path = Rails.root.join('spec', 'support', 'schemas', "bugtest.json")
@@ -38,9 +46,13 @@ RSpec.describe 'JSON::Validator "strict" mode', type: :request do
   it 'should fail when an extra property (not in the schema) is present' do
 
     tester = {
-      alpha: 'foo',
-      beta: 'foo',
-      gamma: 'foo'
+      an_array: [
+        {
+          alpha: 'foo',
+          beta: 'foo',
+          gamma: 'foo'
+        }
+      ]
     }
 
     schema_path = Rails.root.join('spec', 'support', 'schemas', "bugtest.json")
