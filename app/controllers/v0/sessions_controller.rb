@@ -5,6 +5,7 @@ require 'base64'
 module V0
   class SessionsController < ApplicationController
     include Accountable
+    # test
 
     skip_before_action :authenticate, only: %i[new authn_urls saml_callback saml_logout_callback]
 
