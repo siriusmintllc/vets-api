@@ -63,6 +63,7 @@ module Common
                         Common::Client::Errors::ClientError
                       end
 
+        binding.pry; fail
         response_hash = e.response&.to_hash
         client_error = error_class.new(e.message, response_hash&.dig(:status), response_hash&.dig(:body))
         raise client_error

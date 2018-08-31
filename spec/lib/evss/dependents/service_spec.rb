@@ -348,7 +348,6 @@ describe EVSS::Dependents::Service do
       c.allow_http_connections_when_no_cassette = true
     end
     form = subject.retrieve.body.deep_transform_keys { |k| k.camelize(:lower) }
-    change_evss_times(form)
     form = subject.clean_form(form).body.deep_transform_keys { |k| k.camelize(:lower) }
     subject.validate(form)
     form_id = subject.save(form).body['form_id']
