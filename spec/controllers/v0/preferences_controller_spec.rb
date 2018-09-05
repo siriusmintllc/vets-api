@@ -3,6 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe V0::PreferencesController, type: :controller do
+  include RequestHelper
+
   describe '#show' do
     context 'when not logged in' do
       it 'returns unauthorized' do

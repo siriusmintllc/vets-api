@@ -18,4 +18,8 @@ module RequestHelper
 
     parsed_body['errors'].map { |error| error['detail'] }
   end
+
+  def json_body
+    JSON.parse(response.body)
+  end
 end
