@@ -9,7 +9,5 @@ class PreferenceSerializer < ActiveModel::Serializer
     nil
   end
 
-  def preference_choices
-    object.preference_choices
-  end
+  delegate :preference_choices, to: :object
 end
