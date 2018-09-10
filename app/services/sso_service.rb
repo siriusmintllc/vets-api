@@ -23,12 +23,13 @@ class SSOService
       @existing_user = User.find(saml_attributes.user_attributes.uuid)
       @new_user_identity = UserIdentity.new(saml_attributes.to_hash)
       @new_user = init_new_user(new_user_identity, existing_user, saml_attributes.changing_multifactor?)
+      @new_user_identity_map = init_new_user_identity_map(new_user_identity)
       @new_session = Session.new(uuid: new_user.uuid)
     end
   end
 
-  attr_reader :new_session, :new_user, :new_user_identity, :saml_attributes, :saml_response, :existing_user,
-              :failure_instrumentation_tag
+  attr_reader :new_session, :new_user, :new_user_identity, :new_user_identity_map, :saml_attributes, :saml_response,
+              :existing_user, :failure_instrumentation_tag
 
   validate :composite_validations
 
@@ -50,7 +51,7 @@ class SSOService
     end
 
     if valid?
-      new_session.save && new_user.save && new_user_identity.save
+      new_session.save && new_user.save && new_user_identity.save && new_user_identity_map.save
     else
       handle_error_reporting_and_instrumentation
     end
@@ -75,7 +76,7 @@ class SSOService
   private
 
   def init_new_user(user_identity, existing_user = nil, multifactor_change = false)
-    new_user = User.new(user_identity.attributes)
+    new_user = User.new(user_identity.attributes.merge('uuid'=>"#{user_identity.uuid}:#{user_identity.loa}"))
     if multifactor_change
       new_user.mhv_last_signed_in = existing_user.last_signed_in
       new_user.last_signed_in = existing_user.last_signed_in
@@ -83,6 +84,18 @@ class SSOService
       new_user.last_signed_in = Time.current.utc
     end
     new_user
+  end
+
+  def init_new_user_identity_map()
+    new_user_identity_map = UserIdentityMap.find_or_build(user_identity.uuid)
+    if new_user_identity_map.types&.any?
+      unless new_user_identity_map.types.include?(user_identity.loa)
+        new_user_identity_map.types << user_identity.loa
+      end
+    else
+      new_user_identity_map.types = [user_identity.loa]
+    end
+    new_user_identity
   end
 
   def composite_validations

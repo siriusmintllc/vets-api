@@ -236,6 +236,15 @@ class User < Common::RedisStore
     @identity ||= UserIdentity.find(uuid)
   end
 
+  def identity_map
+    @identity_map ||= UserIdentityMap.find(uuid)
+  end
+
+  def identities
+    return [] unless identity_map
+    @identities ||= identity_map.types.map{ |type| UserIdentity.find("#{uuid}:#{type}") }.compact
+  end
+
   def vet360_contact_info
     return nil unless Settings.vet360.contact_information.enabled && vet360_id.present?
     @vet360_contact_info ||= Vet360Redis::ContactInformation.for_user(self)

@@ -29,4 +29,5 @@ class UserIdentity < Common::RedisStore
   validates :uuid, presence: true
   validates :email, presence: true
   validates :loa, presence: true
+
 end
