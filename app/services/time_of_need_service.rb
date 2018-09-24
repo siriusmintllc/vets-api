@@ -4,7 +4,7 @@ require 'faraday'
 
 class TimeOfNeedService
 
-  @conn = Faraday.new(:url => 'https://va--mbmsdev.cs33.my.salesforce.com/services/oauth2/token')
+  @conn = Faraday.new(:url => 'https://va--mbmssit.cs33.my.salesforce.com/services/oauth2/token')
 
   @request = @conn.post do |req|
     req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
