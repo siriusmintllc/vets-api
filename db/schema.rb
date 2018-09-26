@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20180921182057) do
+ActiveRecord::Schema.define(version: 20180926180644) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -342,42 +342,17 @@ ActiveRecord::Schema.define(version: 20180921182057) do
 
   add_index "terms_and_conditions_acceptances", ["user_uuid"], name: "index_terms_and_conditions_acceptances_on_user_uuid", using: :btree
 
-  create_table "time_of_need_attachments", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "time_of_need_contacts", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "time_of_need_decedents", force: :cascade do |t|
-    t.string   "firstName"
-    t.string   "lastName"
-    t.string   "middleName"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "time_of_need_funeral_homes", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "time_of_need_next_of_kins", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "time_of_need_time_of_need_forms", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "time_of_need_veterans", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+  create_table "time_of_need_submissions", force: :cascade do |t|
+    t.string   "burial_activity_type"
+    t.string   "remains_type"
+    t.string   "emblem_code"
+    t.string   "subsequent_indicator"
+    t.string   "liner_type"
+    t.string   "liner_size"
+    t.string   "cremains_type"
+    t.string   "cemetery_type"
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
   end
 
   create_table "user_preferences", force: :cascade do |t|

@@ -160,7 +160,7 @@ Rails.application.routes.draw do
     end
 
     namespace :time_of_need do
-      resources :time_of_need_form, only: %i[new create], defaults: { format: :json }
+      resources :time_of_need_submission, only: %i[new create], defaults: { format: :json }
     end
 
     namespace :vic do
