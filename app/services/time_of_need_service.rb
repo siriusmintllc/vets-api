@@ -1,26 +1,38 @@
 # frozen_string_literal: true
-require 'restforce'
 require 'faraday'
+require 'json'
+require 'net/http'
 
-class TimeOfNeedService
+module TimeOfNeed
+  class TimeOfNeedService < Common::Client::Base
 
-  @conn = Faraday.new(:url => Settings.timeOfNeed.faraday_url)
+    def initialize
+      @conn = Faraday.new(:url => Settings.time_of_need.faraday_url)
 
-  @request = @conn.post do |req|
-    req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-    req.body = Settings.timeOfNeed.client_secret+'&'+Settings.timeOfNneed.api_version+'&'+Settings.timeOfNneed.username+'&'+Settings.timeOfNeed.password+'&'+Settings.timeOfNeed.grant_type
+      @request = @conn.post do |req|
+        req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        req.body = 'client_secret=' + Settings.time_of_need.client_secret.to_s +
+            '&' + 'client_id=' + Settings.time_of_need.client_id +
+            '&' + 'username=' + Settings.time_of_need.username +
+            '&' + 'password=' + Settings.time_of_need.password +
+            '&' + 'grant_type=' + Settings.time_of_need.grant_type
+      end
+    end
+
+    def create(ton)
+      oauth_token = JSON.parse(@request.body)["access_token"]
+      http = Net::HTTP.new(Settings.time_of_need.instance_url, 443)
+      http.use_ssl = true
+      request = Net::HTTP::Post.new("/services/apexrest/MBMS/Case", {'Content-Type' => 'application/json', 'Authorization' => 'OAuth '+oauth_token})
+      request.body = ton.to_json
+
+      response = http.request(request)
+      puts response.body
+    end
+
+    def read(id)
+      @client.find('Account', id)
+    end
+
   end
-
-  @client = Restforce.new(oauth_token: JSON.parse(@request.body)["access_token"],
-                         instance_url: Settings.timeOfNeed.instance_url,
-                         api_version: Settings.timeOfNneed.api_version)
-
-  def create(ton)
-    client.create('Case', ton.as_json)
-  end
-
-  def read(id)
-    client.find('Account', id)
-  end
-
 end
