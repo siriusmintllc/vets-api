@@ -27,11 +27,11 @@ module TimeOfNeed
       request.body = ton.to_json
 
       response = http.request(request)
-      puts response.body
+      response.body
     end
 
     def read(id)
-      @client.find('Account', id)
+      @client.find('Case', id)
     end
 
   end
