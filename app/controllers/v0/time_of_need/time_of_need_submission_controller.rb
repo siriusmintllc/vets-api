@@ -1,10 +1,15 @@
+require 'json'
+
 module V0
   module TimeOfNeed
     class TimeOfNeedSubmissionController < TimeOfNeedController
       def create
         form = ::TimeOfNeed::TimeOfNeedSubmission.new(time_of_need_form_params)
-        #todo: use the service to post to Salesforce
-
+        json = JSON.parse(form.to_json.camelize(:lower))
+        json.delete_if {|k, v| v.nil?}
+        h = Hash.new
+        h["newCase"] = json
+        client.create(h)
       end
 
       private
